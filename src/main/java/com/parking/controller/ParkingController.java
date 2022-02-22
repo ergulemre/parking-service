@@ -28,7 +28,12 @@ public class ParkingController {
 	@PostMapping("/park")
 	public String greeting(HttpEntity<String> httpEntity) throws Exception {
 	    String parkingItem = httpEntity.getBody();
-		CompletableFuture<String> result = garageService.park(parkingItem);
+    	
+		String[] splitCommand = parkingItem.split(" ");
+		String plateNo = splitCommand[1];
+		String color = splitCommand[2];
+		String type = splitCommand[3];
+		CompletableFuture<String> result = garageService.park(plateNo, color, type);
 		return result.get();
 	}
 	

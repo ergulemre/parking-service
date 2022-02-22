@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import com.parking.repository.GarageRepository;
 @Service
 public class GarageService {
 	
+    Logger logger = LoggerFactory.getLogger(GarageService.class);
+	
 	final static int parkingCapacity = 10;
 	
 	@Autowired
@@ -27,12 +31,7 @@ public class GarageService {
 	private Executor executor;
 	
     @Async
-	public CompletableFuture<String> park(String command) {
-    	
-		String[] splitCommand = command.split(" ");
-		String plateNo = splitCommand[1];
-		String color = splitCommand[2];
-		String type = splitCommand[3];
+	public CompletableFuture<String> park(String plateNo, String color, String type) {
 
 		int vehicleLength = lengthOfVehicle(type);
 		
@@ -56,6 +55,7 @@ public class GarageService {
 			garageRepository.updateSlot(plateNo, Long.valueOf(slot), color);
             availableSlotList.remove(0);
 		}
+		logger.info("Parked the car: {} {}", color, plateNo);
 		return CompletableFuture.completedFuture("Allocated " + (vehicleLength==1 ? String.valueOf(vehicleLength) + " slot." : String.valueOf(vehicleLength) + " slots."));
 		//return "Allocated " + (vehicleLength==1 ? String.valueOf(vehicleLength) + " slot." : String.valueOf(vehicleLength) + " slots.") ;	
     }
